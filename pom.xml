@@ -16,6 +16,10 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<sonar.projectKey>preyansh98_safeHome</sonar.projectKey>
+		<sonar.organization>preyansh98</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.login>479f0759222ca1e29a797c1e923b1106684d2e6b</sonar.login>
 	</properties>
 
 	<dependencies>
