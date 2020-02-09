@@ -62,7 +62,11 @@ public class UserAuthService implements UserAuthServiceIF{
         }
 
         if (userRepo.existsById(mcgillID)) {
-            user = userRepo.findById(mcgillID).get();
+            if(userRepo.findById(mcgillID).isPresent()){
+            user = userRepo.findById(mcgillID).get();}
+            else{
+                throw new IllegalStateException("You are not registered as a SafeHomeUser");
+            }
         } else {
             user = new SafeHomeUser(phoneNo, mcgillID);
         }
