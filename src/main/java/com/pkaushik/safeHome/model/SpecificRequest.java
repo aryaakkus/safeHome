@@ -1,5 +1,6 @@
 package com.pkaushik.safeHome.model;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import javax.persistence.*;
@@ -25,7 +26,7 @@ public class SpecificRequest {
     Location pickupLocation;
 
     @Transient
-    DateTime pickupTime;
+    LocalDateTime pickupTime;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="request_destination_id",referencedColumnName = "location_id")

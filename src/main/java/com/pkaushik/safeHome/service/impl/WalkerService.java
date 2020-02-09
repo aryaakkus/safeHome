@@ -6,7 +6,10 @@ import com.pkaushik.safeHome.model.enumerations.RequestStatus;
 import com.pkaushik.safeHome.model.enumerations.WalkerStatus;
 import com.pkaushik.safeHome.repository.WalkerRepository;
 import com.pkaushik.safeHome.service.WalkerServiceIF;
+import com.pkaushik.safeHome.validation.DateTimeValidationIF;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +26,12 @@ public class WalkerService implements WalkerServiceIF {
     @Autowired
     private AssignmentService assignmentService;
 
-    @Override
-    public void setWalkerScheduleService(int mcgillID, int startDay, int startMonth, int startYear, int endDay,
-                                         int endMonth, int endYear, int startHour, int startMin, int endHour,
-                                         int endMin) {
+    @Autowired
+    private DateTimeValidationIF dateValidator;
 
-        //have to ensure walker exists in db first
+    @Override
+    public void setWalkerScheduleService(int mcgillID, Schedule schedule) {
+
         if(!walkerRepo.existsById(mcgillID)) throw new EntityNotFoundException("Walker must exist in DB");
 
         if (SafeHomeUser.getUser(mcgillID) != null && SafeHomeUser.getUser(mcgillID).getRoles() != null) {
@@ -40,16 +43,13 @@ public class WalkerService implements WalkerServiceIF {
             if (walkerRole == null)
                 throw new IllegalStateException("The walker whose schedule you are trying to set does not exist");
 
-            Schedule newSchedule = new Schedule(startDay, startMonth, startYear, endDay, endMonth, endYear,
-                    startHour, startMin, endHour, endMin);
-
-            walkerRole.setSchedule(newSchedule);
+            walkerRole.setSchedule(schedule);
             walkerRepo.save(walkerRole);
         }
     }
 
     @Override
-    public void changeWalkerScheduleService(int mcgillID, int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear, int startHour, int startMin, int endHour, int endMin) {
+    public void changeWalkerScheduleService(int mcgillID, Schedule newSchedule) {
 
         if(!walkerRepo.existsById(mcgillID)) throw new EntityNotFoundException("Walker must exist in DB");
 
@@ -64,20 +64,11 @@ public class WalkerService implements WalkerServiceIF {
 
 
             Schedule currentSchedule = walkerRole.getSchedule();
+
             if (currentSchedule == null)
                 throw new IllegalStateException("No schedule exists to update. Please create a schedule first");
 
-            //brute force
-            if (startDay >= 0) currentSchedule.setStartDay(startDay);
-            if (startMonth >= 0) currentSchedule.setStartMonth(startMonth);
-            if (startYear >= 0) currentSchedule.setStartYear(startYear);
-            if (endDay >= 0) currentSchedule.setEndDay(endDay);
-            if (endMonth >= 0) currentSchedule.setEndMonth(endMonth);
-            if (endYear >= 0) currentSchedule.setEndYear(endYear);
-            if (startHour >= 0) currentSchedule.setStartHour(startHour);
-            if (startMin >= 0) currentSchedule.setStartMin(startMin);
-            if (endHour >= 0) currentSchedule.setEndHour(endHour);
-            if (endMin >= 0) currentSchedule.setEndYear(endYear);
+            walkerRole.setSchedule(newSchedule);
         }
     }
 
